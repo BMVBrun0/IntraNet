@@ -32,12 +32,7 @@ btnRegister.addEventListener("click", async function(){
     myMSALObj.clearCache();
     console.log('limpou')
   });
-  // async function signIn() {
-    
 
-  // }
-  
-  
   function signOut() {
     myMSALObj.logout();
   }

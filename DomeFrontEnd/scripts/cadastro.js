@@ -5,9 +5,7 @@ const apiUrl = 'https://localhost:7282/api/Usuarios';
 const url = window.location.href;
 const parts = url.split('#');
 let teste = false;
-const clientInfoString = parts[1].split('=')[2];
-const decodedString = atob(clientInfoString.split('&state')[0]);
-localStorage.setItem('userToken', decodedString);
+
 let midiaTagFinal;
 
 profilePictureInput.addEventListener('change', (e) => {
@@ -21,56 +19,6 @@ profilePictureInput.addEventListener('change', (e) => {
 
     reader.readAsDataURL(file);
 });
-
-// function sendData() {
-  
-
-// }
-
-function checkUserTokenAndUsername() {
-  localStorage.setItem('userToken', decodedString);
-  if (teste == true){
-    localStorage.setItem('name', name);
-  }
-  const name = localStorage.getItem('name');
-  const clientInfo = localStorage.getItem('userToken');
-  let isLoggedIn = false;
-  axios.get('https://localhost:7282/api/Usuarios', {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(function(response) {
-    console.log('Login successful:', response.data);
-    for (let i = 0; i < response.data.length; i++) {
-      if (response.data[i].clientInfo === clientInfo) {
-        isLoggedIn = true;
-        const nomeUsuario = response.data[i].nome
-        localStorage.setItem('name', nomeUsuario);
-      }
-    }
-    if (isLoggedIn == true) {
-      window.location.href = 'home.html';
-    } else {
-      console.log('erro clientinfo ou nome')
-      localStorage.clear();
-    }
-  })
-  .catch(function(error) {
-    console.error('Error logging in:', error);
-    showErrorModal('Erro ao fazer login, tente novamente.');
-  });
-}
-$(document).ready(function() {
-    console.log('aoooba')
-    $("#loginLink").click(function(event) {
-      const usernameInput = document.getElementById('name');
-      const name = usernameInput.value;
-      localStorage.setItem('name', name);
-    });
-    checkUserTokenAndUsername();
-  
-  });
 
   function generateMediaTag(nome, existingMediaTag) {
     const palavras = nome.split(" ");
@@ -97,7 +45,7 @@ $(document).ready(function() {
     })
     .then(function(response) {
       const items = response.data;  
-      const mediaTagExists = items.some(item => item.mediaTag === mediaTag);
+      const mediaTagExists = items.some(item => item.mediaTag == mediaTag);
 
       if (mediaTagExists) {
         const newMediaTag = generateMediaTag(nome, mediaTag);
@@ -120,7 +68,6 @@ btnRegister.addEventListener('click', function(){
   teste = true;
   const name = document.getElementById('name').value;
   const profilePictureInput = document.getElementById('profilePictureInput').files[0];
-  localStorage.setItem('userToken', decodedString);
   localStorage.setItem('name', name);
   const regex = /\d/;
   if (!name || regex.test(name)) {
@@ -128,13 +75,11 @@ btnRegister.addEventListener('click', function(){
     return;
   }
   generateMediaTag(name);
-
-  const clientInfo = localStorage.getItem('userToken');
   const reader = new FileReader();
+  
   reader.onloadend = async () => {
     const base64String = reader.result;
     const data = {
-      clientInfo: clientInfo,
       nome: name,
       midiaTag: midiaTagFinal,
       ImagemUsuarioBase64: base64String
@@ -150,11 +95,9 @@ btnRegister.addEventListener('click', function(){
         window.location.href = 'home.html';
       } else {
         console.error('Failed to create post:', response.data);
-        showErrorModal('Erro ao cadastrar, tente outro nome de usuário');
       }
     } catch (error) {
       console.error('Failed to create post:', error);
-      showErrorModal('Erro ao cadastrar, tente outro nome de usuário');
     }
   };
   reader.readAsDataURL(profilePictureInput);

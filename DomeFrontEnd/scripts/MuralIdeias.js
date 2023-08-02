@@ -12,13 +12,25 @@ axios.get('https://localhost:7282/api/Usuarios/topScoring')
         data.forEach(obj => {
             const tarefaElement = document.createElement('div');
             tarefaElement.classList.add('nomesjs', 'col-12', 'col-md-12', 'm-2');
-            tarefaElement.textContent = obj.pontuacao + ' - ' + obj.nome;
+            
+            const imgElement = document.createElement('img');
+            imgElement.src = obj.imagemUsuarioBase64;
+            imgElement.classList.add('img-circle');
+            tarefaElement.appendChild(imgElement);
+            
+            const nomeElement = document.createElement('span');
+            nomeElement.textContent = obj.pontuacao + ' - ' + obj.nome;
+            nomeElement.classList.add('ml-2', 'align-middle');
+            tarefaElement.appendChild(nomeElement);
+            
             myDiv.appendChild(tarefaElement);
         });
     })
     .catch(error => {
         console.error(error);
     });
+
+
 
 let contador = 0
 axios.get('https://localhost:7282/api/Tarefas')
@@ -386,9 +398,4 @@ function criarAreaDeComentario(usuario, tarefa) {
   divComentario.appendChild(btnEnviar);
 
   return divComentario;
-}
-
-function criarElementoComentario(visible,cardFooterElement, tarefa, usuario) {
-  debugger
-
 }
